@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vayal – Smart Fertilizer Advisor</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div class="brand" onclick="App.switchView('form')">
+        <div class="brand-icon">🌱</div>
+        <div class="brand-text">
+          <h1>Vayal</h1>
+          <span>Smart Fertilizer Advisor</span>
+        </div>
+      </div>
+
+      <ul class="nav-links">
+        <li class="nav-item active" data-view="form">🌾 Advisor Form</li>
+        <li class="nav-item" data-view="result">📊 Recommendation Result</li>
+        <li class="nav-item" data-view="history">📋 History & Reports</li>
+        <li class="nav-item" data-view="knowledge">🌿 Knowledge Base</li>
+        <li class="nav-item" data-view="farmers">👨‍🌾 Farmer Directory</li>
+      </ul>
+
+      <div class="api-status">
+        <div class="status-dot"></div>
+        <span>Checking API...</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Banner -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">🌾 Precision Agriculture Decision Support</div>
+        <h2 class="hero-title">Science-Backed Crop Nutrition & Sustainable Soil Health</h2>
+        <p class="hero-desc">
+          Empowering farmers with verified ICAR/TNAU agronomic rules. Tailored nutrient management calibrated by certified soil test reports, with safe organic guidance when reports are unavailable.
+        </p>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-value">100%</span>
+            <span class="stat-label">Verified Agronomic Rules</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">STCR</span>
+            <span class="stat-label">Soil Test Crop Response Formula</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">Zero Guesswork</span>
+            <span class="stat-label">No Invented Chemical Dosages</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container">
+
+    <!-- ============================================================= -->
+    <!-- VIEW 1: SMART ADVISOR FORM                                    -->
+    <!-- ============================================================= -->
+    <section id="view-form" class="view-section active">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🌾 Smart Fertilizer Recommendation Form</h2>
+            <p class="card-subtitle">Fill in farmer details, select crop and growth stage, and specify soil test status.</p>
+          </div>
+        </div>
+
+        <form id="fertilizerAdvisorForm">
+          <!-- Step 1: Farmer Profile -->
+          <h3 style="font-size: 1.05rem; color: var(--primary-dark); margin-bottom: 15px; border-left: 4px solid var(--primary); padding-left: 10px;">
+            1. Farmer Profile
+          </h3>
+
+          <div class="form-grid" style="margin-bottom: 25px;">
+            <div class="form-group full-width">
+              <label for="existingFarmerSelect">Select Existing Farmer (Optional Quick-Fill)</label>
+              <select id="existingFarmerSelect">
+                <option value="">-- Or enter new farmer details below --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="farmerName">Farmer Name <span class="required-star">*</span></label>
+              <input type="text" id="farmerName" placeholder="e.g. Murugan P." required>
+            </div>
+
+            <div class="form-group">
+              <label for="farmerPhone">Phone Number</label>
+              <input type="tel" id="farmerPhone" placeholder="e.g. 9842100000">
+            </div>
+
+            <div class="form-group">
+              <label for="farmerLocation">Farm Location (Village / District) <span class="required-star">*</span></label>
+              <input type="text" id="farmerLocation" placeholder="e.g. Thanjavur, Tamil Nadu" required>
+            </div>
+
+            <div class="form-group">
+              <label for="farmSizeAcre">Land Size (Acres) <span class="required-star">*</span></label>
+              <input type="number" id="farmSizeAcre" step="0.1" min="0.1" max="1000" value="1.0" required>
+              <span class="input-hint">Dosages and commercial bags will be scaled to this land area.</span>
+            </div>
+          </div>
+
+          <!-- Step 2: Crop & Soil Context -->
+          <h3 style="font-size: 1.05rem; color: var(--primary-dark); margin-bottom: 15px; border-left: 4px solid var(--primary); padding-left: 10px;">
+            2. Crop & Field Parameters
+          </h3>
+
+          <div class="form-grid" style="margin-bottom: 25px;">
+            <div class="form-group">
+              <label for="cropSelect">Crop Selection <span class="required-star">*</span></label>
+              <select id="cropSelect" required>
+                <option value="">-- Choose Crop --</option>
+              </select>
+              <span id="cropSoilHint" class="input-hint" style="color: var(--primary-dark);"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="soilTypeSelect">Field Soil Type <span class="required-star">*</span></label>
+              <select id="soilTypeSelect" required>
+                <option value="">-- Select Soil Type --</option>
+                <option value="Alluvial Soil">Alluvial Soil (Vast fertile river plains)</option>
+                <option value="Black Cotton Soil">Black Cotton Soil (Heavy clay, high moisture retentive)</option>
+                <option value="Red Soil">Red Soil (Iron-rich, permeable, light texture)</option>
+                <option value="Sandy Loam">Sandy Loam (Well-drained, rapid infiltration)</option>
+                <option value="Clay Soil">Clay Soil (Fine texture, high cation exchange)</option>
+                <option value="Laterite Soil">Laterite Soil (Acidic, iron-aluminum rich)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="growthStageSelect">Current Crop Growth Stage <span class="required-star">*</span></label>
+              <select id="growthStageSelect" required>
+                <option value="">-- Select Growth Stage --</option>
+                <option value="BASAL">Basal / Sowing & Transplanting</option>
+                <option value="VEGETATIVE">Vegetative / Active Tillering</option>
+                <option value="FLOWERING">Flowering / Panicle Initiation / Booting</option>
+                <option value="MATURITY">Maturity / Grain Filling & Harvest</option>
+              </select>
+              <span class="input-hint">The advisor determines the exact split application for this stage.</span>
+            </div>
+          </div>
+
+          <!-- Step 3: Soil Test Availability Toggle -->
+          <h3 style="font-size: 1.05rem; color: var(--primary-dark); margin-bottom: 15px; border-left: 4px solid var(--primary); padding-left: 10px;">
+            3. Soil Test Report Availability
+          </h3>
+
+          <div class="toggle-group">
+            <div id="toggle-soil-no" class="toggle-card selected">
+              <input type="radio" name="soilTestToggle" class="toggle-radio" checked>
+              <div class="toggle-info">
+                <h4>⚠️ No Soil Test Report</h4>
+                <p>I do not have a certified soil lab report. Provide safe general guidance and organic practices.</p>
+              </div>
+            </div>
+
+            <div id="toggle-soil-yes" class="toggle-card">
+              <input type="radio" name="soilTestToggle" class="toggle-radio">
+              <div class="toggle-info">
+                <h4>🌿 Yes, I have a Soil Test Report</h4>
+                <p>I have lab figures for Available N, P, K and Soil pH. Calibrate exact chemical dosage.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notice when NO report is selected -->
+          <div id="noReportNotice" class="no-report-alert">
+            <div class="alert-icon">💡</div>
+            <div class="alert-content">
+              <h4>Agronomic Safety Guarantee</h4>
+              <p>
+                Because no certified soil test report is provided, <strong>Vayal will not guess or invent arbitrary chemical fertilizer amounts</strong>.
+                Applying uncalibrated chemical fertilizers risks soil toxicity, plant burn, and economic loss.
+                Instead, you will receive scientifically safe baseline organic manuring guidelines, biofertilizer protocols, and complete instructions on how to get your soil tested.
+              </p>
+            </div>
+          </div>
+
+          <!-- Conditional Input Panel when YES report is selected -->
+          <div id="soilTestInputPanel" class="soil-test-panel" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <h4 style="color: var(--primary-dark); font-size: 1rem;">
+                🔬 Certified Soil Test Lab Parameters
+              </h4>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="unitSelect" style="font-size: 0.85rem; margin: 0;">Report Unit:</label>
+                <select id="unitSelect" style="width: auto; padding: 6px 10px; font-size: 0.85rem;">
+                  <option value="KG_PER_HA" selected>kg/ha (Standard ICAR)</option>
+                  <option value="PPM">ppm / mg/kg (Parts per million)</option>
+                  <option value="LBS_PER_ACRE">lbs/acre</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="inputN">Available Nitrogen (N) <span class="required-star">*</span></label>
+                <input type="number" id="inputN" step="0.1" min="1" max="2000" placeholder="e.g. 210.0">
+                <span class="input-hint">Benchmark (kg/ha): Low &lt; 280, Med 280-560, High &gt; 560</span>
+              </div>
+
+              <div class="form-group">
+                <label for="inputP">Available Phosphorus (P / P₂O₅) <span class="required-star">*</span></label>
+                <input type="number" id="inputP" step="0.1" min="0.1" max="500" placeholder="e.g. 18.5">
+                <span class="input-hint">Benchmark (kg/ha): Low &lt; 23, Med 23-56, High &gt; 56</span>
+              </div>
+
+              <div class="form-group">
+                <label for="inputK">Available Potassium (K / K₂O) <span class="required-star">*</span></label>
+                <input type="number" id="inputK" step="0.1" min="1" max="1500" placeholder="e.g. 145.0">
+                <span class="input-hint">Benchmark (kg/ha): Low &lt; 130, Med 130-335, High &gt; 335</span>
+              </div>
+
+              <div class="form-group">
+                <label for="inputPh">Soil pH (0 - 14) <span class="required-star">*</span></label>
+                <input type="number" id="inputPh" step="0.05" min="3.0" max="11.0" placeholder="e.g. 6.8">
+                <span class="input-hint">Ideal: 6.0 - 7.5. &lt;6.0 is Acidic (Lime needed), &gt;8.5 is Sodic (Gypsum needed)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Submit Action -->
+          <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: flex-end;">
+            <button type="reset" class="btn btn-secondary">Reset Form</button>
+            <button type="submit" id="btnSubmitForm" class="btn btn-primary" style="padding: 14px 32px; font-size: 1rem;">
+              Generate Fertilizer Plan 🌾
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- VIEW 2: RECOMMENDATION RESULT CARD                            -->
+    <!-- ============================================================= -->
+    <section id="view-result" class="view-section">
+      <div class="card" style="padding: 0; overflow: hidden;">
+        <!-- Result Header Banner -->
+        <div class="result-header-banner">
+          <div>
+            <div style="font-size: 0.85rem; color: #c8e6c9; text-transform: uppercase; letter-spacing: 1px;">Agronomic Recommendation Dossier</div>
+            <h2 id="resFarmerName" style="font-size: 1.6rem; font-weight: 800; margin: 4px 0;">Farmer Name</h2>
+            <div style="font-size: 0.95rem; color: #e8f5e9;">
+              <span id="resFarmSize">1.0 Acre</span> • <span id="resCropName">Crop Name</span> • Stage: <strong id="resGrowthStage">Basal</strong>
+            </div>
+          </div>
+
+          <div style="text-align: right;">
+            <div id="resStatusBadge" class="result-badge badge-calibrated">Status</div>
+            <div id="resDate" style="font-size: 0.8rem; color: #e8f5e9; margin-top: 6px;">Date</div>
+          </div>
+        </div>
+
+        <div class="result-body">
+          <!-- Section 1: Soil Health Report Card (Visible when soil tested) -->
+          <div id="resSoilTestedSection">
+            <h3 style="font-size: 1.15rem; color: var(--primary-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              🔬 Soil Health Report Card & Classification
+            </h3>
+
+            <div class="nutrient-grid">
+              <div class="nutrient-card">
+                <div class="nutrient-name">Available Nitrogen (N)</div>
+                <div id="resNRating" class="nutrient-rating-badge rating-medium">MEDIUM</div>
+                <div id="resNVal" class="nutrient-val">320 kg/ha</div>
+                <span class="input-hint">ICAR STCR calibrated</span>
+              </div>
+
+              <div class="nutrient-card">
+                <div class="nutrient-name">Available Phosphorus (P₂O₅)</div>
+                <div id="resPRating" class="nutrient-rating-badge rating-low">LOW</div>
+                <div id="resPVal" class="nutrient-val">18.5 kg/ha</div>
+                <span class="input-hint">+25% dose applied to build soil</span>
+              </div>
+
+              <div class="nutrient-card">
+                <div class="nutrient-name">Available Potassium (K₂O)</div>
+                <div id="resKRating" class="nutrient-rating-badge rating-medium">MEDIUM</div>
+                <div id="resKVal" class="nutrient-val">190 kg/ha</div>
+                <span class="input-hint">100% standard RDF applied</span>
+              </div>
+
+              <div class="nutrient-card">
+                <div class="nutrient-name">Soil Reaction (pH)</div>
+                <div id="resPhClass" class="nutrient-rating-badge rating-medium">Neutral / Ideal</div>
+                <div id="resPhVal" class="nutrient-val">pH 6.8</div>
+                <span class="input-hint">Optimal nutrient availability</span>
+              </div>
+            </div>
+
+            <!-- pH Amendment Box -->
+            <div style="background-color: var(--primary-subtle); border-left: 4px solid var(--primary); padding: 14px 18px; border-radius: var(--radius-sm); margin-bottom: 25px;">
+              <strong style="color: var(--primary-dark);">Soil Amendment / pH Advisory:</strong>
+              <span id="resPhAdvisory" style="color: var(--text-primary); margin-left: 6px;">Optimal range.</span>
+            </div>
+          </div>
+
+          <!-- Section 1 (Alternative): No Soil Test Guidance -->
+          <div id="resNoReportSection" style="display: none; margin-bottom: 25px;">
+            <div class="no-report-alert" style="margin-top: 0;">
+              <div class="alert-icon">⚠️</div>
+              <div class="alert-content">
+                <h4 style="font-size: 1.1rem;">Soil Test Report Unavailable – Scientific Guidance</h4>
+                <div id="resSoilTestingGuide" style="line-height: 1.6; font-size: 0.9rem; margin-top: 8px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Current Stage Commercial Fertilizer Plan -->
+          <div style="margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px;">
+              <h3 style="font-size: 1.15rem; color: var(--primary-dark);">
+                📦 Commercial Fertilizer Requirement for Current Stage
+              </h3>
+              <div id="currStageNutrients" style="font-size: 0.85rem; color: var(--text-secondary);"></div>
+            </div>
+
+            <div id="resCommercialBags" class="bag-grid">
+              <!-- Dynamically populated bag cards -->
+            </div>
+          </div>
+
+          <!-- Section 3: Full Season Stage Split Application Calendar -->
+          <div style="margin-bottom: 30px;">
+            <h3 style="font-size: 1.15rem; color: var(--primary-dark); margin-bottom: 12px;">
+              📅 Seasonal Growth Stage Split Calendar
+            </h3>
+            <div class="schedule-table-wrap">
+              <table class="schedule-table">
+                <thead>
+                  <tr>
+                    <th>Growth Stage</th>
+                    <th>Nitrogen (N) Split</th>
+                    <th>Phosphorus (P) Split</th>
+                    <th>Potassium (K) Split</th>
+                    <th>Stage Advisory & Application Note</th>
+                  </tr>
+                </thead>
+                <tbody id="resScheduleTableBody">
+                  <!-- Split items -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Section 4: Organic & Biofertilizer Foundation -->
+          <div style="margin-bottom: 30px; background-color: #fafaf9; border: 1px solid #e7e5e4; border-radius: var(--radius-md); padding: 22px;">
+            <h3 style="font-size: 1.15rem; color: #44403c; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+              🍂 Organic Manuring & Biofertilizer Protocol
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px;">
+              <div>
+                <strong style="color: #292524; font-size: 0.9rem;">Farmyard Manure / Compost:</strong>
+                <p id="resVermicompost" style="font-size: 0.85rem; color: #57534e; margin-top: 4px;"></p>
+                <div id="resFymTons" style="font-size: 1.1rem; font-weight: 700; color: #15803d; margin-top: 6px;"></div>
+              </div>
+
+              <div>
+                <strong style="color: #292524; font-size: 0.9rem;">Biofertilizer Inoculants:</strong>
+                <p id="resBiofertilizers" style="font-size: 0.85rem; color: #57534e; margin-top: 4px;"></p>
+              </div>
+
+              <div>
+                <strong style="color: #292524; font-size: 0.9rem;">Green Manuring:</strong>
+                <p id="resGreenManure" style="font-size: 0.85rem; color: #57534e; margin-top: 4px;"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 5: Best Management Practices & Warnings -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div style="background-color: var(--primary-subtle); border: 1px solid var(--primary-border); border-radius: var(--radius-md); padding: 18px;">
+              <h4 style="color: var(--primary-dark); font-size: 0.95rem; margin-bottom: 8px;">✓ Best Agronomic Practices</h4>
+              <ul id="resBmpList" style="padding-left: 20px; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;"></ul>
+            </div>
+
+            <div style="background-color: var(--status-warn-bg); border: 1px solid #fde68a; border-radius: var(--radius-md); padding: 18px;">
+              <h4 style="color: #92400e; font-size: 0.95rem; margin-bottom: 8px;">⚠️ Essential Field Warnings</h4>
+              <ul id="resWarnList" style="padding-left: 20px; font-size: 0.85rem; color: #78350f; line-height: 1.6;"></ul>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="no-print" style="display: flex; gap: 15px; justify-content: flex-end; padding-top: 15px; border-top: 1px solid var(--border-color);">
+            <button id="btnPrintReport" class="btn btn-secondary">🖨️ Print / Save PDF</button>
+            <button class="btn btn-outline" onclick="App.switchView('history')">📋 View in History</button>
+            <button class="btn btn-primary" onclick="App.switchView('form')">🌾 New Recommendation</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- VIEW 3: RECOMMENDATION HISTORY                                -->
+    <!-- ============================================================= -->
+    <section id="view-history" class="view-section">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">📋 Recommendation History & Auditing</h2>
+            <p class="card-subtitle">All past fertilizer recommendations stored permanently in MySQL.</p>
+          </div>
+
+          <div style="width: 300px;">
+            <input type="text" id="historySearchInput" placeholder="🔍 Search farmer, crop, or location...">
+          </div>
+        </div>
+
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Farmer & Location</th>
+                <th>Crop & Acreage</th>
+                <th>Growth Stage</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- History rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- VIEW 4: CROPS & FERTILIZERS KNOWLEDGE BASE                    -->
+    <!-- ============================================================= -->
+    <section id="view-knowledge" class="view-section">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🌿 Verified Agricultural Knowledge Base</h2>
+            <p class="card-subtitle">Official ICAR / TNAU agronomic standards, crop RDF benchmarks, and fertilizer compositions.</p>
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.1rem; color: var(--primary-dark); margin: 15px 0 10px;">
+          1. Supported Crops & Standard RDF (kg/ha)
+        </h3>
+        <div id="kbCropGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-bottom: 30px;">
+          <!-- Crop cards -->
+        </div>
+
+        <h3 style="font-size: 1.1rem; color: var(--primary-dark); margin: 25px 0 10px;">
+          2. Commercial Fertilizer Standards & Nutrient Ratios
+        </h3>
+        <div class="history-table-wrap">
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>Fertilizer Name</th>
+                <th>Category</th>
+                <th>Guaranteed Nutrient Analysis (N-P-K)</th>
+                <th>Bag Weight</th>
+                <th>Agronomic Role</th>
+              </tr>
+            </thead>
+            <tbody id="kbFertilizerTable">
+              <!-- Fertilizer rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- VIEW 5: FARMER DIRECTORY                                      -->
+    <!-- ============================================================= -->
+    <section id="view-farmers" class="view-section">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">👨‍🌾 Farmer Directory</h2>
+            <p class="card-subtitle">Registered agricultural profiles with quick access to fertilizer advice.</p>
+          </div>
+        </div>
+
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Farmer Name</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th>Farm Size</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="farmersTableBody">
+              <!-- Farmers rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
