@@ -307,23 +307,38 @@ const App = {
   renderRecommendationResult(rec) {
     if (!rec) return;
 
+    // Helper functions for safe DOM updates
+    const setText = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val != null ? val : '';
+    };
+
+    const setHtml = (id, html) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html != null ? html : '';
+    };
+
     // Header info
-    document.getElementById('resFarmerName').textContent = rec.farmerName;
-    document.getElementById('resFarmSize').textContent = `${rec.farmSizeAcre} Acres`;
-    document.getElementById('resCropName').textContent = `${rec.cropName} (${rec.scientificName || ''})`;
-    document.getElementById('resGrowthStage').textContent = rec.growthStageName || rec.growthStage;
-    document.getElementById('resSoilType').textContent = rec.soilType;
-    document.getElementById('resDate').textContent = new Date(rec.createdAt).toLocaleDateString('en-IN', {
-      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
+    setText('resFarmerName', rec.farmerName);
+    setText('resFarmSize', `${rec.farmSizeAcre} Acres`);
+    setText('resCropName', `${rec.cropName} (${rec.scientificName || ''})`);
+    setText('resGrowthStage', rec.growthStageName || rec.growthStage);
+    setText('resSoilType', rec.soilType);
+    if (rec.createdAt) {
+      setText('resDate', new Date(rec.createdAt).toLocaleDateString('en-IN', {
+        year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      }));
+    }
 
     const badge = document.getElementById('resStatusBadge');
-    if (rec.hasSoilTestReport) {
-      badge.className = 'result-badge badge-calibrated';
-      badge.textContent = '✓ Soil-Test Calibrated Plan (ICAR STCR)';
-    } else {
-      badge.className = 'result-badge badge-uncalibrated';
-      badge.textContent = '⚠️ General Guidance (Soil Test Pending)';
+    if (badge) {
+      if (rec.hasSoilTestReport) {
+        badge.className = 'result-badge badge-calibrated';
+        badge.textContent = '✓ Soil-Test Calibrated Plan (ICAR STCR)';
+      } else {
+        badge.className = 'result-badge badge-uncalibrated';
+        badge.textContent = '⚠️ General Guidance (Soil Test Pending)';
+      }
     }
 
     // Soil Health Section
@@ -331,126 +346,139 @@ const App = {
     const noReportSec = document.getElementById('resNoReportSection');
 
     if (rec.hasSoilTestReport && rec.soilHealthSummary) {
-      soilTestedSec.style.display = 'block';
-      noReportSec.style.display = 'none';
+      if (soilTestedSec) soilTestedSec.style.display = 'block';
+      if (noReportSec) noReportSec.style.display = 'none';
 
       const sh = rec.soilHealthSummary;
-      document.getElementById('resNVal').textContent = `${sh.nitrogenNormalisedKgHa} kg/ha`;
-      document.getElementById('resNRating').textContent = sh.nitrogenRating;
-      document.getElementById('resNRating').className = `nutrient-rating-badge rating-${sh.nitrogenRating.toLowerCase()}`;
+      const nRating = (sh.nitrogenRating || 'MEDIUM').toLowerCase();
+      const pRating = (sh.phosphorusRating || 'MEDIUM').toLowerCase();
+      const kRating = (sh.potassiumRating || 'MEDIUM').toLowerCase();
 
-      document.getElementById('resPVal').textContent = `${sh.phosphorusNormalisedKgHa} kg/ha`;
-      document.getElementById('resPRating').textContent = sh.phosphorusRating;
-      document.getElementById('resPRating').className = `nutrient-rating-badge rating-${sh.phosphorusRating.toLowerCase()}`;
+      setText('resNVal', `${sh.nitrogenNormalisedKgHa || 0} kg/ha`);
+      setText('resNRating', sh.nitrogenRating || 'N/A');
+      const elN = document.getElementById('resNRating');
+      if (elN) elN.className = `nutrient-rating-badge rating-${nRating}`;
 
-      document.getElementById('resKVal').textContent = `${sh.potassiumNormalisedKgHa} kg/ha`;
-      document.getElementById('resKRating').textContent = sh.potassiumRating;
-      document.getElementById('resKRating').className = `nutrient-rating-badge rating-${sh.potassiumRating.toLowerCase()}`;
+      setText('resPVal', `${sh.phosphorusNormalisedKgHa || 0} kg/ha`);
+      setText('resPRating', sh.phosphorusRating || 'N/A');
+      const elP = document.getElementById('resPRating');
+      if (elP) elP.className = `nutrient-rating-badge rating-${pRating}`;
 
-      document.getElementById('resPhVal').textContent = `pH ${sh.phValue}`;
-      document.getElementById('resPhClass').textContent = sh.phClassification;
-      document.getElementById('resPhAdvisory').textContent = rec.phAdvisory || 'pH is within normal range.';
+      setText('resKVal', `${sh.potassiumNormalisedKgHa || 0} kg/ha`);
+      setText('resKRating', sh.potassiumRating || 'N/A');
+      const elK = document.getElementById('resKRating');
+      if (elK) elK.className = `nutrient-rating-badge rating-${kRating}`;
+
+      setText('resPhVal', `pH ${sh.phValue != null ? sh.phValue : '-'}`);
+      setText('resPhClass', sh.phClassification || '-');
+      setText('resPhAdvisory', rec.phAdvisory || 'pH is within normal range.');
     } else {
-      soilTestedSec.style.display = 'none';
-      noReportSec.style.display = 'block';
-      document.getElementById('resSoilTestingGuide').innerHTML = (rec.soilTestingGuidance || '')
-        .replace(/\n/g, '<br/>');
+      if (soilTestedSec) soilTestedSec.style.display = 'none';
+      if (noReportSec) noReportSec.style.display = 'block';
+      setHtml('resSoilTestingGuide', (rec.soilTestingGuidance || '').replace(/\n/g, '<br/>'));
     }
 
     // Current stage nutrient requirement
     const currStageReq = rec.currentStageNutrientRequirement;
     if (currStageReq && rec.hasSoilTestReport) {
-      document.getElementById('currStageNutrients').innerHTML = `
+      setHtml('currStageNutrients', `
         <strong>Current Stage Demand (for ${rec.farmSizeAcre} acres):</strong>
-        <span style="color: var(--primary);">N: ${currStageReq.nitrogenKg} kg</span> |
-        <span style="color: #0284c7;">P₂O₅: ${currStageReq.phosphorusKg} kg</span> |
-        <span style="color: #d97706;">K₂O: ${currStageReq.potassiumKg} kg</span>
-      `;
+        <span style="color: var(--primary);">N: ${currStageReq.nitrogenKg || 0} kg</span> |
+        <span style="color: #0284c7;">P₂O₅: ${currStageReq.phosphorusKg || 0} kg</span> |
+        <span style="color: #d97706;">K₂O: ${currStageReq.potassiumKg || 0} kg</span>
+      `);
     } else {
-      document.getElementById('currStageNutrients').innerHTML = `
+      setHtml('currStageNutrients', `
         <em>Chemical fertilizer dosages are deliberately omitted pending laboratory soil testing.</em>
-      `;
+      `);
     }
 
     // Commercial fertilizer bags
     const bagContainer = document.getElementById('resCommercialBags');
-    bagContainer.innerHTML = '';
-
-    if (rec.currentStageFertilizerBags && rec.currentStageFertilizerBags.length > 0) {
-      rec.currentStageFertilizerBags.forEach(b => {
-        const bagCard = document.createElement('div');
-        bagCard.className = 'bag-card';
-        bagCard.innerHTML = `
-          <div class="bag-header">
-            <div>
-              <div class="bag-title">${b.fertilizerName}</div>
-              <div class="bag-unit">${b.shortName} • ${b.bagWeightKg} kg Bag</div>
+    if (bagContainer) {
+      bagContainer.innerHTML = '';
+      if (rec.currentStageFertilizerBags && rec.currentStageFertilizerBags.length > 0) {
+        rec.currentStageFertilizerBags.forEach(b => {
+          const bagCard = document.createElement('div');
+          bagCard.className = 'bag-card';
+          bagCard.innerHTML = `
+            <div class="bag-header">
+              <div>
+                <div class="bag-title">${b.fertilizerName}</div>
+                <div class="bag-unit">${b.shortName} • ${b.bagWeightKg} kg Bag</div>
+              </div>
+              <div class="bag-count">${b.bagsCount} <span style="font-size: 0.9rem; font-weight: normal;">Bags</span></div>
             </div>
-            <div class="bag-count">${b.bagsCount} <span style="font-size: 0.9rem; font-weight: normal;">Bags</span></div>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;">
-            Total Quantity: <strong>${b.quantityKg} kg</strong> (for ${rec.farmSizeAcre} acres)
-          </p>
-          <div class="bag-method">
-            <strong>Application Note:</strong> ${b.applicationMethod}
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;">
+              Total Quantity: <strong>${b.quantityKg} kg</strong> (for ${rec.farmSizeAcre} acres)
+            </p>
+            <div class="bag-method">
+              <strong>Application Note:</strong> ${b.applicationMethod}
+            </div>
+          `;
+          bagContainer.appendChild(bagCard);
+        });
+      } else {
+        bagContainer.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 20px; background: #f8fafc; border-radius: var(--radius-md); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem;">
+            ${rec.hasSoilTestReport ? 'No commercial fertilizer required for this particular stage.' : 'Commercial chemical fertilizer dosages are omitted pending soil test calibration to protect your soil health.'}
           </div>
         `;
-        bagContainer.appendChild(bagCard);
-      });
-    } else {
-      bagContainer.innerHTML = `
-        <div style="grid-column: 1 / -1; padding: 20px; background: #f8fafc; border-radius: var(--radius-md); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem;">
-          ${rec.hasSoilTestReport ? 'No commercial fertilizer required for this particular stage.' : 'Commercial chemical fertilizer dosages are omitted pending soil test calibration to protect your soil health.'}
-        </div>
-      `;
+      }
     }
 
     // Split schedule table
     const tableBody = document.getElementById('resScheduleTableBody');
-    tableBody.innerHTML = '';
-
-    if (rec.stageSplitSchedule && rec.stageSplitSchedule.length > 0) {
-      rec.stageSplitSchedule.forEach(s => {
-        const row = document.createElement('tr');
-        if (s.stageCode.equalsIgnoreCase(rec.growthStage)) {
-          row.style.backgroundColor = 'var(--primary-subtle)';
-          row.style.fontWeight = 'bold';
-        }
-        row.innerHTML = `
-          <td>${s.stageName} ${s.stageCode.equalsIgnoreCase(rec.growthStage) ? '<span style="color: var(--primary); font-size: 0.75rem; border: 1px solid var(--primary); padding: 2px 6px; border-radius: 4px;">CURRENT</span>' : ''}</td>
-          <td>${s.nPercent}% ${s.nKg !== null ? `(${s.nKg} kg)` : ''}</td>
-          <td>${s.pPercent}% ${s.pKg !== null ? `(${s.pKg} kg)` : ''}</td>
-          <td>${s.kPercent}% ${s.kKg !== null ? `(${s.kKg} kg)` : ''}</td>
-          <td><small>${s.instructions || '-'}</small></td>
-        `;
-        tableBody.appendChild(row);
-      });
+    if (tableBody) {
+      tableBody.innerHTML = '';
+      if (rec.stageSplitSchedule && rec.stageSplitSchedule.length > 0) {
+        rec.stageSplitSchedule.forEach(s => {
+          const row = document.createElement('tr');
+          const isCurrent = s.stageCode && rec.growthStage && s.stageCode.toUpperCase() === rec.growthStage.toUpperCase();
+          if (isCurrent) {
+            row.style.backgroundColor = 'var(--primary-subtle)';
+            row.style.fontWeight = 'bold';
+          }
+          row.innerHTML = `
+            <td>${s.stageName} ${isCurrent ? '<span style="color: var(--primary); font-size: 0.75rem; border: 1px solid var(--primary); padding: 2px 6px; border-radius: 4px;">CURRENT</span>' : ''}</td>
+            <td>${s.nPercent}% ${s.nKg !== null && s.nKg !== undefined ? `(${s.nKg} kg)` : ''}</td>
+            <td>${s.pPercent}% ${s.pKg !== null && s.pKg !== undefined ? `(${s.pKg} kg)` : ''}</td>
+            <td>${s.kPercent}% ${s.kKg !== null && s.kKg !== undefined ? `(${s.kKg} kg)` : ''}</td>
+            <td><small>${s.instructions || '-'}</small></td>
+          `;
+          tableBody.appendChild(row);
+        });
+      }
     }
 
     // Organic and Biofertilizer Plan
     if (rec.organicAndBioPlan) {
-      document.getElementById('resFymTons').textContent = `${rec.organicAndBioPlan.fymTons} Tons FYM`;
-      document.getElementById('resVermicompost').textContent = rec.organicAndBioPlan.vermicompostRecommendation;
-      document.getElementById('resBiofertilizers').textContent = rec.organicAndBioPlan.biofertilizers;
-      document.getElementById('resGreenManure').textContent = rec.organicAndBioPlan.greenManureRecommendation;
+      setText('resFymTons', `${rec.organicAndBioPlan.fymTons != null ? rec.organicAndBioPlan.fymTons : 0} Tons FYM`);
+      setText('resVermicompost', rec.organicAndBioPlan.vermicompostRecommendation);
+      setText('resBiofertilizers', rec.organicAndBioPlan.biofertilizers);
+      setText('resGreenManure', rec.organicAndBioPlan.greenManureRecommendation);
     }
 
     // Best Management Practices & Warnings
     const bmpList = document.getElementById('resBmpList');
-    bmpList.innerHTML = '';
-    (rec.bestManagementPractices || []).forEach(b => {
-      const li = document.createElement('li');
-      li.textContent = b;
-      bmpList.appendChild(li);
-    });
+    if (bmpList) {
+      bmpList.innerHTML = '';
+      (rec.bestManagementPractices || []).forEach(b => {
+        const li = document.createElement('li');
+        li.textContent = b;
+        bmpList.appendChild(li);
+      });
+    }
 
     const warnList = document.getElementById('resWarnList');
-    warnList.innerHTML = '';
-    (rec.agronomicWarnings || []).forEach(w => {
-      const li = document.createElement('li');
-      li.textContent = w;
-      warnList.appendChild(li);
-    });
+    if (warnList) {
+      warnList.innerHTML = '';
+      (rec.agronomicWarnings || []).forEach(w => {
+        const li = document.createElement('li');
+        li.textContent = w;
+        warnList.appendChild(li);
+      });
+    }
   },
 
   async loadHistory() {

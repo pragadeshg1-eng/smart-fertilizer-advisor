@@ -227,7 +227,82 @@ public class DataInitializer implements CommandLineRunner {
                         0.0, 0.0, 0.0,
                         "Stop chemical application.",
                         "No manure needed.",
-                        "Pick clean, dry bolls in morning hours.")
+                        "Pick clean, dry bolls in morning hours."),
+
+                // Sugarcane
+                new GuidanceRule("SUGARCANE", "BASAL", "Basal / Planting Setts",
+                        30.0, 100.0, 30.0,
+                        "Apply 100% Phosphorus (SSP/DAP) and 30% each of Nitrogen and Potash in furrows before planting setts.",
+                        "Apply 10 tons well-rotted FYM/compost per acre + Azotobacter/Gluconacetobacter @ 4 kg/acre.",
+                        "Dip two-budded setts in 0.1% Carbendazim before planting in furrows."),
+
+                new GuidanceRule("SUGARCANE", "VEGETATIVE", "Tillering & Formative Phase (30-60 DAP)",
+                        40.0, 0.0, 35.0,
+                        "Top-dress 40% Nitrogen and 35% Potash during partial earthing up at 45-60 DAP.",
+                        "Foliar spray of 2% Urea + 1% Zinc Sulphate if tillers show chlorosis.",
+                        "Carry out partial earthing-up and weed control to promote vigorous tillering."),
+
+                new GuidanceRule("SUGARCANE", "FLOWERING", "Grand Growth & Elongation (90-120 DAP)",
+                        30.0, 0.0, 35.0,
+                        "Top-dress remaining 30% Nitrogen and 35% Potash along with full earthing-up at 90-120 DAP.",
+                        "Spray 1% Ferrous Sulphate + 0.5% Urea if interveinal iron chlorosis appears.",
+                        "Full earthing-up and trash mulching in furrows to conserve soil moisture."),
+
+                new GuidanceRule("SUGARCANE", "MATURITY", "Cane Ripening & Sugar Synthesis",
+                        0.0, 0.0, 0.0,
+                        "Stop nitrogen fertilization 3 months prior to harvest to enhance sucrose synthesis and juice quality.",
+                        "No manure application during ripening.",
+                        "Withhold irrigation 15 days before cutting to prevent sucrose inversion."),
+
+                // Groundnut
+                new GuidanceRule("GROUNDNUT", "BASAL", "Basal / Sowing",
+                        50.0, 100.0, 50.0,
+                        "Band-place 50% Nitrogen, 100% Phosphorus (SSP preferred for sulfur content), and 50% Potash 5 cm below seed level.",
+                        "Apply 4 tons FYM/acre + Rhizobium culture @ 200g/10kg seeds + Phosphobacteria @ 2 kg/acre.",
+                        "Ensure fine tilth seedbed and treat seeds with Trichoderma viride @ 4g/kg."),
+
+                new GuidanceRule("GROUNDNUT", "VEGETATIVE", "Vegetative & Early Flowering (20-25 DAS)",
+                        25.0, 0.0, 25.0,
+                        "Top dress 25% Nitrogen and 25% Potash at 20-25 DAS before flowering.",
+                        "Foliar spray of 1% DAP or Panchagavya 3% at start of flowering.",
+                        "Light hoeing and weeding; finish all intercultural operations before peg initiation."),
+
+                new GuidanceRule("GROUNDNUT", "FLOWERING", "Pegging & Pod Filling (40-45 DAS)",
+                        25.0, 0.0, 25.0,
+                        "Apply remaining 25% Nitrogen and 25% Potash. Critical: Apply Agricultural Gypsum @ 200 kg/acre around plants and lightly cover with soil to supply Calcium for pod shell hardening.",
+                        "Foliar spray of 0.5% Borax at 45 DAS to avoid hollow heart kernel disorder.",
+                        "DO NOT disturb soil with hoes or interculture implements after peg penetration."),
+
+                new GuidanceRule("GROUNDNUT", "MATURITY", "Pod Maturity & Harvest (90-105 DAS)",
+                        0.0, 0.0, 0.0,
+                        "Nutrient application ceases; allow pods to harden.",
+                        "No manure required.",
+                        "Check maturity by examining inner shell color (brownish-black inner lining indicates full maturity)."),
+
+                // Tomato
+                new GuidanceRule("TOMATO", "BASAL", "Basal / Transplanting",
+                        30.0, 100.0, 30.0,
+                        "Apply 100% Phosphorus (SSP/DAP), 30% Nitrogen, and 30% Potash in furrows before transplanting healthy 25-day seedlings.",
+                        "Incorporate 8 tons well-decomposed FYM or 2 tons Vermicompost per acre + Azospirillum @ 2 kg/acre + Trichoderma @ 1 kg/acre.",
+                        "Transplant in afternoon or cloudy weather and give immediate light irrigation."),
+
+                new GuidanceRule("TOMATO", "VEGETATIVE", "Early Vegetative Growth (20-25 DAT)",
+                        35.0, 0.0, 35.0,
+                        "Top-dress 35% Nitrogen (Urea) and 35% Potash (MOP) 10 cm away from plant stems followed by light earthing-up.",
+                        "Spray 1% 19:19:19 or Jeevamrutha at 10-day intervals.",
+                        "Stake plants with bamboo poles to prevent fruit soil contact and disease."),
+
+                new GuidanceRule("TOMATO", "FLOWERING", "Flowering & Fruit Setting (45-50 DAT)",
+                        35.0, 0.0, 35.0,
+                        "Apply remaining 35% Nitrogen and 35% Potash to support heavy fruit cluster enlargement.",
+                        "Spray Calcium Nitrate @ 5g/L + Boron @ 1g/L to prevent Blossom End Rot (BER) in tomatoes.",
+                        "Maintain uniform soil moisture; avoid alternate drying and flooding which causes fruit cracking."),
+
+                new GuidanceRule("TOMATO", "MATURITY", "Fruit Ripening & Harvesting",
+                        0.0, 0.0, 0.0,
+                        "Cease chemical soil fertilization; fruit ripening relies on translocated assimilates.",
+                        "Foliar Potassium Schoenite (0.5%) if color development is uneven.",
+                        "Harvest fruits at breaker or pink stage for market transport.")
         );
 
         guidanceRuleRepository.saveAll(rules);

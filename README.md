@@ -1,7 +1,7 @@
 # Vayal – Smart Fertilizer Advisor 🌾
 > Precision Agriculture Decision-Support & Soil Health System for Farmers
 
-[![Java](https://img.shields.io/badge/Java-21%20%7C%2025-orange.svg)](https://adoptium.net/)
+[![Java](https://img.shields.io/badge/Java-17%20%7C%2021-orange.svg)](https://adoptium.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0+-blue.svg)](https://www.mysql.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)]()
@@ -105,42 +105,38 @@ D:\MedicineStockManagement/
 ## 🚀 Quick Setup & Execution
 
 ### Prerequisites
-- Java JDK 21 or 25 installed
-- Apache Maven 3.8+ (or use wrapper)
-- MySQL Server 8.0+ running on port 3306
+- Java JDK 17, 21, or 25 installed
+- Apache Maven 3.8+ (or use the included `run.bat` / `run.ps1`)
+- Optional: MySQL Server 8.0+ (the app defaults to embedded H2 for instant zero-configuration local runs)
 
-### Step 1: Database Setup
-Launch MySQL and create the database (optional if `createDatabaseIfNotExist=true` is used in JDBC URL):
+### Quick Start (Zero-Configuration Embedded Mode)
+Simply run either script from the project folder:
 
-```sql
-CREATE DATABASE IF NOT EXISTS fertilizer_advisor_db;
+#### Windows CMD:
+```cmd
+run.bat
 ```
-
-You can optionally run `database/schema.sql` and `database/sample_data.sql` via MySQL Workbench or command line:
-```bash
-mysql -u root -p fertilizer_advisor_db < database/schema.sql
-mysql -u root -p fertilizer_advisor_db < database/sample_data.sql
-```
-*(Spring Boot also auto-seeds the data on initial startup via `src/main/resources/data.sql`)*.
-
-### Step 2: Set Database Password & Run
-Set your MySQL password as an environment variable in PowerShell or Command Prompt:
 
 #### Windows PowerShell:
 ```powershell
-$env:SPRING_DATASOURCE_PASSWORD="YourMySQLPassword"
+.\run.ps1
+```
+
+Or using Maven directly:
+```bash
 mvn spring-boot:run
 ```
 
-#### Windows Command Prompt (CMD):
-```cmd
-set SPRING_DATASOURCE_PASSWORD=YourMySQLPassword
-mvn spring-boot:run
-```
-
-#### Run in In-Memory / Test Mode (No MySQL required):
+### Production / MySQL Setup (Optional)
+If you wish to use an external MySQL instance:
+1. Ensure MySQL is running on port 3306.
+2. Set your environment variables and launch:
 ```powershell
-mvn spring-boot:run -Dspring-boot.run.profiles=test
+$env:SPRING_DATASOURCE_URL="jdbc:mysql://localhost:3306/fertilizer_advisor_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+$env:SPRING_DATASOURCE_USERNAME="root"
+$env:SPRING_DATASOURCE_PASSWORD="YourMySQLPassword"
+$env:SPRING_DATASOURCE_DRIVER="com.mysql.cj.jdbc.Driver"
+mvn spring-boot:run
 ```
 
 ### Step 3: Access the Web Dashboard
